@@ -1,11 +1,13 @@
 import os
 
+import json
+
 
 def cls():
     os.system('cls')
 
 
-db = []
+estoque = []
 
 
 class Product():
@@ -23,42 +25,32 @@ class Product():
             'qnt': self._qnt
         }
 
-        db.append(obj)
+        estoque.append(obj)
 
-    def remove(self):
-        cls()
-        index = int
-        search = input('Insira no nome: ')
-        if search != '0':
-            for i, obj in enumerate(db):
-                if obj['nome'] == search:
-                    print(db[i])
-                    input()
-                    index = i
-        if search == '0':
-            print('Voltar')
-
-        print('Deseja deletar?\n'
-              '1 - Sim\n'
-              '2 - Não\n')
-        res = input('Digite uma opção: ')
-
-        if res == '1':
-            if index != int:
-                del db[i]
-                print('Elemento deletado')
-            else:
-                print('Elemento invalido.')
-        else:
-            print('Voltar')
-
+        print('Produto Adicionado.')
         input()
 
-    def write(self):
-        print(db)
+    def remove(self, index):
+        if index != None:
+            del estoque[index]
+        print('Elemento deletado')
 
-    def update():
-        pass
+    def write(self):
+        cls()
+        print('Manager\n')
+        print(f'Estoque:\n {json.dumps(estoque, indent=4)}')
+        input()
+
+    def update(self, index, produto):
+
+        print('upt', index, produto)
+        if index != None:
+            estoque[index] = produto
+
+            print('Produto Alterado')
+            input()
+        else:
+            print('Produto Invalido')
 
     def model(self):
 
@@ -74,17 +66,96 @@ class Product():
 
 
 def add_obj(obj):
+    cls()
+
+    print('Manager\n')
     print('Digite os seguintes atributos.')
+
+    prod = dict
+    atr = dict
+
     for key, value in obj.items():
-        resp = value(input(f'{key}: '))
-        obj[key] = resp
+
+        inpt = input(f'{key}: ')
+        if inpt == '':
+            if value == str:
+                prod = ''
+            if value == int or value == float:
+                prod = 0
+            atr = prod
+        else:
+            atr = value(inpt)
+        obj[key] = atr
+
     return obj
+
+# Deixar como se fosse uma api com http code
+
+
+def search(obj):
+    index = int
+
+    print('Manager\n')
+    print('Insira o nome do produto que deseja remover\n'
+          '0 - Voltar\n')
+    search = input('Nome do item: ')
+
+    cls()
+
+    if search != '0':
+        for i, obj in enumerate(estoque):
+            if obj['nome'] == search:
+                print('Manager\n'
+                      'Item: \n')
+                print(estoque[i])
+                input()
+                index = i
+        return index
+    else:
+        return '0'
+
+
+def remove_obj(obj):
+    cls()
+
+    rsp = search(obj)
+
+    if rsp == '0':
+        print('Voltar')
+    else:
+        print('Deseja deletar?\n'
+              '1 - Sim\n'
+              '2 - Não\n')
+        res = input('Digite uma opção: ')
+        i = rsp
+        if res == '1':
+            if i != int:
+
+                return i
+            else:
+                print('Elemento invalido.')
+        else:
+            print('Voltar')
+
+    input()
+
+
+def uptdate_obj(model):
+    cls()
+    index = search(model)
+    if index != int:
+        obj = estoque[index]
+        return {'index': index, 'obj': obj}
+    else:
+        return {'msg': '404'}
 
 
 def interface():
     while True:
+        cls()
 
         p = Product()
+        model = p.model()
 
         print('Manager\n\n'
               '0 - Sair\n'
@@ -94,25 +165,34 @@ def interface():
               '4 - Atualizar\n')
         opt = input('Escolha uma opção: ')
         if opt == '0':
+            print('Boa noite!')
             break
 
         if opt == '1':
 
-            obj = add_obj(p.model())
+            obj = add_obj(model)
             nome = obj['nome']
             preco = obj['preco']
             qnt = obj['qnt']
             p.add(nome, preco, qnt)
-            print('Produto Adicionado.')
-            input()
 
         if opt == '2':
-            p.remove()
+            index = remove_obj(model)
+            p.remove(index)
+
         if opt == '3':
             p.write()
-            input()
+
         if opt == '4':
-            pass
+            resp = uptdate_obj(model)
+            if resp['msg'] == '200':
+                index = resp['index']
+                obj = resp['obj']
+                p.update(index,  obj)
+            else:
+                print('Manager\n\n'
+                      'Produto não encontrado')
+                input()
 
 
 interface()
