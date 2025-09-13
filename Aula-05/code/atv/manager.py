@@ -96,9 +96,6 @@ def add_obj(obj):
     return obj
 
 
-# Deixar como se fosse uma api com http code
-
-
 def search(obj):
     index = int
 
