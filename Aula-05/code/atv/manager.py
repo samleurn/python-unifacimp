@@ -17,6 +17,7 @@ class Product():
         pass
 
     def add(self, nome, preco, qnt):
+
         Product._code += 1
         self._code = Product._code
         self._nome = nome
@@ -32,7 +33,7 @@ class Product():
 
         estoque.append(obj)
 
-        print('Produto Adicionado.')
+        print(f'Produto Adicionado: {obj}')
         input()
 
     def remove(self, index):
@@ -48,17 +49,15 @@ class Product():
 
     def update(self, index, produto):
 
-        print('upt', index, produto)
         if index != None:
             estoque[index] = produto
 
-            print('Produto Alterado')
+            print(f'Produto Alterado {produto}')
             input()
         else:
             print('Produto Invalido')
 
     def model(self):
-
         obj = {
             'nome': str,
             'preco': float,
@@ -66,8 +65,7 @@ class Product():
         }
 
         self._obj = obj
-
-        return obj
+        return self._obj
 
 
 def add_obj(obj):
@@ -76,8 +74,8 @@ def add_obj(obj):
     print('Manager\n')
     print('Digite os seguintes atributos.')
 
-    prod = dict
-    atr = dict
+    prod = None
+    atr = None
 
     for key, value in obj.items():
 
@@ -96,28 +94,16 @@ def add_obj(obj):
     return obj
 
 
-def search(obj):
-    index = int
+def search(inpt):
 
-    print('Manager\n')
-    print('Insira o código do produto que deseja remover\n'
-          '0 - Voltar\n')
-    search = input('Codigo do item: ')
+    index = None
 
-    cls()
-
-    if search != '0':
-        if search == '':
-            return '0'
-        for i, obj in enumerate(estoque):
-            if isinstance(int(search), int):
-                if obj['code'] == int(search):
-                    print('Manager\n'
-                          'Item: \n')
-                    print(estoque[i])
-                    input()
-                    index = i
-            return index
+    if inpt == '' or inpt == '0':
+        return '0'
+    if isinstance(int(inpt), int):
+        for i, obj in enumerate(estoque, start=0):
+            if obj['code'] == int(inpt):
+                return i
     else:
         return '0'
 
@@ -125,16 +111,20 @@ def search(obj):
 def remove_obj(obj):
     cls()
 
-    rsp = search(obj)
+    print('Manager\n')
+    print('0 - Voltar\n')
+    inpt = input('Digite o código: ')
+    rsp = search(inpt)
 
     if rsp == '0':
         print('Voltar')
     else:
+        i = rsp
+        print(f'Item: {estoque[i]}')
         print('Deseja deletar?\n'
               '1 - Sim\n'
               '2 - Não\n')
         res = input('Digite uma opção: ')
-        i = rsp
         if res == '1':
             if i != int:
                 print(rsp)
@@ -147,10 +137,17 @@ def remove_obj(obj):
     input()
 
 
-def uptdate_obj(model):
+def uptdate_obj():
     cls()
-    index = search(model)
-    if index != '0':
+
+    print('Manager\n')
+    print('0 - Voltar\n')
+    inpt = input('Digite o código: ')
+    index = search(inpt)
+
+    if index == '0':
+        print('Voltar')
+    else:
         if index != int:
             atr = None
             obj = estoque[index]
@@ -172,11 +169,9 @@ def uptdate_obj(model):
                             print('Valor invalido.')
 
                     obj[key] = atr
-            return {'msg': '200', 'index': index, 'obj': obj}
+            return {'index': index, 'obj': obj}
         else:
-            return {'msg': '404'}
-    if index == '0':
-        return {'msg': '204'}
+            print('Produto não encontrado')
 
 
 def interface():
@@ -213,18 +208,10 @@ def interface():
             p.write()
 
         if opt == '4':
-            resp = uptdate_obj(model)
-            if resp['msg'] == '200':
-                index = resp['index']
-                obj = resp['obj']
-                p.update(index,  obj)
-            if resp['msg'] == '404':
-                print('Manager\n')
-                print('Produto não encontrado')
-                input()
-            if resp['msg'] == '204':
-                print('Voltar')
-                input()
+            resp = uptdate_obj()
+            index = resp['index']
+            obj = resp['obj']
+            p.update(index,  obj)
 
 
 interface()
