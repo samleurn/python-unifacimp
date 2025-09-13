@@ -11,15 +11,20 @@ estoque = []
 
 
 class Product():
+    _code = 0
+
     def __init__(self):
         pass
 
     def add(self, nome, preco, qnt):
+        Product._code += 1
+        self._code = Product._code
         self._nome = nome
         self._preco = preco
         self._qnt = qnt
 
         obj = {
+            'code': self._code,
             'nome': self._nome,
             'preco': self._preco,
             'qnt': self._qnt
@@ -77,6 +82,7 @@ def add_obj(obj):
     for key, value in obj.items():
 
         inpt = input(f'{key}: ')
+
         if inpt == '':
             if value == str:
                 prod = ''
@@ -89,6 +95,7 @@ def add_obj(obj):
 
     return obj
 
+
 # Deixar como se fosse uma api com http code
 
 
@@ -96,21 +103,24 @@ def search(obj):
     index = int
 
     print('Manager\n')
-    print('Insira o nome do produto que deseja remover\n'
+    print('Insira o código do produto que deseja remover\n'
           '0 - Voltar\n')
-    search = input('Nome do item: ')
+    search = input('Codigo do item: ')
 
     cls()
 
     if search != '0':
+        if search == '':
+            return '0'
         for i, obj in enumerate(estoque):
-            if obj['nome'] == search:
-                print('Manager\n'
-                      'Item: \n')
-                print(estoque[i])
-                input()
-                index = i
-        return index
+            if isinstance(int(search), int):
+                if obj['code'] == int(search):
+                    print('Manager\n'
+                          'Item: \n')
+                    print(estoque[i])
+                    input()
+                    index = i
+            return index
     else:
         return '0'
 
@@ -130,7 +140,7 @@ def remove_obj(obj):
         i = rsp
         if res == '1':
             if i != int:
-
+                print(rsp)
                 return i
             else:
                 print('Elemento invalido.')
@@ -143,11 +153,33 @@ def remove_obj(obj):
 def uptdate_obj(model):
     cls()
     index = search(model)
-    if index != int:
-        obj = estoque[index]
-        return {'index': index, 'obj': obj}
-    else:
-        return {'msg': '404'}
+    if index != '0':
+        if index != int:
+            atr = None
+            obj = estoque[index]
+            print('Digite os novos valores\n'
+                  'obs.: Para pular a modificação pressione enter: ')
+            for key, value in obj.items():
+                if key != 'code':
+                    inpt = input(f'{key}: ')
+                    if inpt == '':
+                        atr = value
+                    else:
+                        if isinstance(value, float):
+                            atr = float(inpt)
+                        elif isinstance(value, int):
+                            atr = int(inpt)
+                        elif isinstance(value, str):
+                            atr = str(inpt)
+                        else:
+                            print('Valor invalido.')
+
+                    obj[key] = atr
+            return {'msg': '200', 'index': index, 'obj': obj}
+        else:
+            return {'msg': '404'}
+    if index == '0':
+        return {'msg': '204'}
 
 
 def interface():
@@ -189,9 +221,12 @@ def interface():
                 index = resp['index']
                 obj = resp['obj']
                 p.update(index,  obj)
-            else:
-                print('Manager\n\n'
-                      'Produto não encontrado')
+            if resp['msg'] == '404':
+                print('Manager\n')
+                print('Produto não encontrado')
+                input()
+            if resp['msg'] == '204':
+                print('Voltar')
                 input()
 
 
